@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Form</title>
+    <style>
+        form {
+            max-width: 500px;
+            margin: auto;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="contactForm">
+        <h2>Contact Us</h2>
+        <input type="text" name="name" placeholder="Your Name" required><br><br>
+        <input type="email" name="email" placeholder="Your Email" required><br><br>
+        <input type="text" name="subject" placeholder="Subject" required><br><br>
+        <textarea name="message" placeholder="Your Message" rows="5" required></textarea><br><br>
+        <button type="submit">Send Message</button>
+        <div class="status" id="formStatus"></div>
+    </form>
+
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                name: form.name.value,
+                email: form.email.value,
+                subject: form.subject.value,
+                message: form.message.value
+            };
+
+            const statusEl = document.getElementById("formStatus");
+            statusEl.textContent = "Sending...";
+
+            try {
+                const response = await fetch("http://localhost:3000/send", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    statusEl.textContent = "Message sent successfully!";
+                    form.reset();
+                } else {
+                    statusEl.textContent = "Failed to send message.";
+                }
+            } catch (error) {
+                console.error(error);
+                statusEl.textContent = "An error occurred.";
+            }
+        });
+    </script>
+</body>
+
+</html>
